@@ -39,9 +39,10 @@ class Calculator {
     etc
      */
     int fibonacciNumberFinder(int n){
-        return 0;
-    }
+        if(n <= 1) return 1;
 
+        return fibonacciNumberFinder(n - 1) + fibonacciNumberFinder(n - 2);
+    }
 
     /*
     Returns binary value of the given int number
