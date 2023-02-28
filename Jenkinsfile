@@ -1,4 +1,9 @@
 pipeline {
+    environment {
+        registry = "codjohn0/calculator-java"
+        registryCredential = 'dockerhub'
+        dockerImage=''
+    }
     agent any
 
     tools {
@@ -43,5 +48,35 @@ pipeline {
                 archiveArtifacts artifacts: 'target/*.jar'
             }
         }
+
+        stage ('Building image') {
+            steps {
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+
+        stage ('Deploy Image') {
+            steps {
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+
+        stage ('Remove unused docker image') {
+            steps {
+                sh "docker rmi $registry:$BUILD_NUMBER"
+            }
+        }
+    }
+
+    post {
+        mail to: 'cjohns365@gmail.com',
+             subject: 'Failed Pipeline: ${currentBuild.fullDisplayName}',
+             body: "Error occurred during Pipeline process: ${env.BUILD_URL}"
     }
 }
