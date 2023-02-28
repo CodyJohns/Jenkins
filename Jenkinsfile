@@ -75,8 +75,10 @@ pipeline {
     }
 
     post {
-        mail to: 'cjohns365@gmail.com',
-             subject: 'Failed Pipeline: ${currentBuild.fullDisplayName}',
-             body: "Error occurred during Pipeline process: ${env.BUILD_URL}"
+        failure {
+            mail to: 'cjohns365@gmail.com',
+                 subject: 'Failed Pipeline: ${currentBuild.fullDisplayName}',
+                 body: "Error occurred during Pipeline process: ${env.BUILD_URL}"
+        }
     }
 }
